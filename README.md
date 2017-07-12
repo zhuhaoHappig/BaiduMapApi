@@ -1,4 +1,6 @@
 # BaiduMapApi
+Android百度地图开发
+
 此项目包：利用百度地图画运动轨迹，图层响应点击事件，百度定位sdk参数详细介绍等等
 
 demo中api详细介绍请阅读我的[zhh_happig的简书博客](http://www.jianshu.com/u/d82bd37b1d29)
