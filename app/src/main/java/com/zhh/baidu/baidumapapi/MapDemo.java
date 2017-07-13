@@ -19,6 +19,7 @@ import com.baidu.location.LocationClientOption;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
+import com.baidu.mapapi.map.MapPoi;
 import com.baidu.mapapi.map.MapStatus;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
@@ -125,6 +126,20 @@ public class MapDemo extends Activity implements SensorEventListener {
 		mBaiduMap = mMapView.getMap();
 		// 开启定位图层
 		mBaiduMap.setMyLocationEnabled(true);
+
+		mBaiduMap.setOnMapClickListener(new BaiduMap.OnMapClickListener() {
+			@Override
+			public void onMapClick(LatLng latLng) {
+				//点击地图某个位置获取经纬度latLng.latitude、latLng.longitude
+			}
+
+			@Override
+			public boolean onMapPoiClick(MapPoi mapPoi) {
+				//点击地图上的poi图标获取描述信息：mapPoi.getName()，经纬度：mapPoi.getPosition()
+				return false;
+			}
+		});
+
 		// 定位初始化
 		mLocClient = new LocationClient(this);
 		mLocClient.registerLocationListener(myListener);

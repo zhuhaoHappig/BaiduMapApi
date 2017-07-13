@@ -116,7 +116,7 @@ public class DynamicDemo extends Activity implements SensorEventListener {
 		mLocClient = new LocationClient(this);
 		mLocClient.registerLocationListener(myListener);
 		LocationClientOption option = new LocationClientOption();
-		option.setLocationMode(LocationClientOption.LocationMode.Device_Sensors);
+		option.setLocationMode(LocationClientOption.LocationMode.Device_Sensors);//只用gps定位，需要在室外定位。
 		option.setOpenGps(true); // 打开gps
 		option.setCoorType("bd09ll"); // 设置坐标类型
 		option.setScanSpan(1000);
@@ -216,6 +216,7 @@ public class DynamicDemo extends Activity implements SensorEventListener {
 				return;
 			}
 
+			//注意这里只接受gps点，需要在室外定位。
 			if (location.getLocType() == BDLocation.TypeGpsLocation) {
 				
 				info.setText("GPS信号弱，请稍后...");
@@ -290,24 +291,31 @@ public class DynamicDemo extends Activity implements SensorEventListener {
 		builder.target(ll).zoom(mCurrentZoom);
 		mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newMapStatus(builder.build()));
 	}
-	
-	
+
+	/**
+	 * 首次定位很重要，选一个精度相对较高的起始点
+	 * 注意：如果一直显示gps信号弱，说明过滤的标准过高了，
+	 你可以将location.getRadius()>25中的过滤半径调大，比如>40，
+	 并且将连续5个点之间的距离DistanceUtil.getDistance(last, ll ) > 5也调大一点，比如>10，
+	 这里不是固定死的，你可以根据你的需求调整，如果你的轨迹刚开始效果不是很好，你可以将半径调小，两点之间距离也调小，
+	 gps的精度半径一般是10-50米
+	 */
 	private LatLng getMostAccuracyLocation(BDLocation location){
 		
-		if (location.getRadius()>25) {//gps位置精度大于25米的点直接弃用
+		if (location.getRadius()>40) {//gps位置精度大于40米的点直接弃用
 			return null;
 		}
 		
 		LatLng ll = new LatLng(location.getLatitude(), location.getLongitude());
 		
-		if (DistanceUtil.getDistance(last, ll ) > 5) {
+		if (DistanceUtil.getDistance(last, ll ) > 10) {
 			last = ll;
-			points.clear();//有任意连续两点位置大于5，重新取点
+			points.clear();//有任意连续两点位置大于10，重新取点
 			return null;
 		}
 		points.add(ll);
 		last = ll;
-		//有5个连续的点之间的距离小于5，认为gps已稳定，以最新的点为起始点
+		//有5个连续的点之间的距离小于10，认为gps已稳定，以最新的点为起始点
 		if(points.size() >= 5){
 			points.clear();
 			return ll;
